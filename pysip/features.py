@@ -44,6 +44,21 @@ def read_numeric_rois(vec_fname, clase='clase'):
     rois_gpd['class_id'] = rois_gpd[clase]
     return rois_gpd
 #%%
+def read_pts(vec_fname, clase='clase', clases = None):
+    '''lee los puntos definidos en un archivo vectorial a un geopandas (gpd)
+    agrega una columna 'class_id' numerando las clases que aparecen.
+    Devuelve el gpd y la lista ordenada de nombre de clases para referencia.
+    Se puede forzar un listado de clases, si en un vectorial no aparecen todas las clases de interés.'''
+    rois_gpd = gpd.read_file(vec_fname)
+    if clases==None:
+        clases=list(set(rois_gpd[clase]))
+    clases.sort() #numero las clases de los ROIs alfabéticamente
+    clase_dict = {clase:i for i, clase in enumerate(clases)}
+    rois_gpd['class_id'] = [clase_dict[c] for c in rois_gpd[clase].values]
+    return rois_gpd, clases
+
+
+#%%
 #Levanto en X, Y los datos etiquetados de todo un raster
 def extract_ROIs_features_from_raster(raster_fn, rois_gpd):
     '''Dado un raster y ROIs en un gpd extrae los 
@@ -256,6 +271,38 @@ def extract_ROIs_point_features_from_dir(dir_features, vec_fname, N=100, verbose
         
                     
     return X, Y, feature_names
+
+#%%
+#################################
+## Levantar features puntuales ##
+#################################
+
+#%%#Levanto en X, Y los datos etiquetados de pts dados de un vectorial
+def extract_point_features_from_raster(raster_fn, pts_gpd):
+    '''Dado un raster y ROIs en un gpd extrae los 
+    valores espectrales de los pixels (X) y sus etiquetas (Y).
+    Devuelve X, Y.'''
+    #Leo los ROIS
+    with rasterio.open(raster_fn) as src:
+        d=src.count #cantidad de atributos = cantidad de bandas en el raster
+        img = src.read()
+                             
+    
+    #Preparo colección de atributos etiquetados. Comienza con 0 datos
+    N=len(pts_gpd)
+    X = np.zeros([N,d],dtype = np.float32) #array con todos los atributos
+    Y = np.zeros([N],dtype=int)            #array con sus etiquetas
+    
+    
+    #with rasterio.open(raster_fn) as src:
+    for i, point in pts_gpd.iterrows():
+        x = point['geometry'].xy[0][0]
+        y = point['geometry'].xy[1][0]
+        row, col = src.index(x,y)
+        X[i]=img[:,row,col]
+        Y[i]=point['class_id']
+                
+    return X, Y
 #%%#Gero puntos en ROIs, N en cada clase
 def generate_points_from_ROIs(vec_fname, N=100, verbose = True, clase='clase'):
     '''genera puntos 
