@@ -86,31 +86,31 @@ def compute_mbb(fn, snap_to_grid = True, grid_step = 10):
                            (mX, MY))]})
     return [mbb]
 #%%
-# def guardar_GTiff_as_src(fn, src_fn, mat, verbose=True):
-#     '''guarda un geoTiff copiando la georeferenciación de otro'''
-#     with rasterio.open(src_fn) as src:
-#         transform = src.transform
-#         crs=src.crs #recuerdo el sistema de referencia para poder grabar
-#     if len(mat.shape)==2:
-#         count=1
-#     else:
-#         count=mat.shape[0]
-#     if verbose: print(f'Guardando GeoTIFF de {count} bandas.')
-#     with rasterio.open(
-#     fn,
-#     'w',
-#     driver='GTiff',
-#     height=mat.shape[-2],
-#     width=mat.shape[-1],
-#     count=count,
-#     dtype=np.float32,
-#     crs=crs,
-#     transform=transform) as dst:
-#         if len(mat.shape)==2:
-#             dst.write(mat.astype(np.float32), 1)
-#         else:
-#             for b in range(0,count):
-#                 dst.write(mat[b].astype(np.float32), b+1)
+def guardar_GTiff_as_src(fn, src_fn, mat, verbose=True):
+    '''guarda un geoTiff copiando la georeferenciación de otro'''
+    with rasterio.open(src_fn) as src:
+        transform = src.transform
+        crs=src.crs #recuerdo el sistema de referencia para poder grabar
+    if len(mat.shape)==2:
+        count=1
+    else:
+        count=mat.shape[0]
+    if verbose: print(f'Guardando GeoTIFF de {count} bandas.')
+    with rasterio.open(
+    fn,
+    'w',
+    driver='GTiff',
+    height=mat.shape[-2],
+    width=mat.shape[-1],
+    count=count,
+    dtype=np.float32,
+    crs=crs,
+    transform=transform) as dst:
+        if len(mat.shape)==2:
+            dst.write(mat.astype(np.float32), 1)
+        else:
+            for b in range(0,count):
+                dst.write(mat[b].astype(np.float32), b+1)
 
     
 
