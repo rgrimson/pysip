@@ -278,7 +278,7 @@ def extract_ROIs_point_features_from_dir(dir_features, vec_fname, N=100, verbose
 #################################
 
 #%%#Levanto en X, Y los datos etiquetados de pts dados de un vectorial
-def extract_point_features_from_raster(raster_fn, pts_gpd):
+def extract_point_features_from_raster(raster_fn, pts_gpd, label_col = 'class_id'):
     '''Dado un raster y ROIs en un gpd extrae los 
     valores espectrales de los pixels (X) y sus etiquetas (Y).
     Devuelve X, Y.'''
@@ -291,7 +291,7 @@ def extract_point_features_from_raster(raster_fn, pts_gpd):
     #Preparo colección de atributos etiquetados. Comienza con 0 datos
     N=len(pts_gpd)
     X = np.zeros([N,d],dtype = np.float32) #array con todos los atributos
-    Y = np.zeros([N],dtype=int)            #array con sus etiquetas
+    Y = np.zeros([N],dtype=type(pts_gpd[label_col].iloc[0])) #array con sus etiquetas
     
     
     #with rasterio.open(raster_fn) as src:
@@ -300,7 +300,7 @@ def extract_point_features_from_raster(raster_fn, pts_gpd):
         y = point['geometry'].xy[1][0]
         row, col = src.index(x,y)
         X[i]=img[:,row,col]
-        Y[i]=point['class_id']
+        Y[i]=point[label_col]
                 
     return X, Y
 #%%#Gero puntos en ROIs, N en cada clase

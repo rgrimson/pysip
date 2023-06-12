@@ -27,7 +27,7 @@ from tqdm import tqdm
 # Búsqueda de parámetros max_depth y n_estimators
 
 #%%
-def find_best_RF_max_depth(X, Y, init_md = 20, init_ne = 100, n_jobs = 15, n_splits = 5, verbose = True, use_kappa = False):
+def find_best_RF_max_depth(X, Y, init_md = 20, init_ne = 100, n_jobs = 15, n_splits = 5, verbose = True, use_kappa = False, return_acc = False):
     lmd = np.arange(init_md//2,init_md*2)
     if verbose: 
         print( 'Buscando el valor óptimo para el parámetro max_depth:')
@@ -89,12 +89,17 @@ def find_best_RF_max_depth(X, Y, init_md = 20, init_ne = 100, n_jobs = 15, n_spl
     plt.legend()
     #plt.ylim(0.99,1.0001)
     plt.show()
-    return best_prof
+    if return_acc:
+        rta = (best_prof, best_acc)
+    else:
+        rta = best_prof
+        
+    return rta
 
                     
 #%%
 #N-ESTIMATORS
-def find_best_RF_n_estimators(X, Y, init_md = 20, init_ne = 100, n_jobs = 15, n_splits = 5, verbose = True, use_kappa = False):
+def find_best_RF_n_estimators(X, Y, init_md = 20, init_ne = 100, n_jobs = 15, n_splits = 5, verbose = True, use_kappa = False, return_acc = False):
     if verbose: 
         print( 'Buscando el valor óptimo para el parámetro n_estimators:')
         print(f'    Rango: {init_ne//2} a {2*init_ne}.')
@@ -155,5 +160,9 @@ def find_best_RF_n_estimators(X, Y, init_md = 20, init_ne = 100, n_jobs = 15, n_
     plt.legend()
     #plt.ylim(0.99,1.0001)
     plt.show()
-    return best_ne
+    if return_acc:
+        rta = (best_ne, best_acc)
+    else:
+        rta = best_ne
+    return rta
     
