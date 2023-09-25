@@ -212,12 +212,12 @@ def create_png_from_all_Landsat_from_dir(dir_in, dir_out, dir_temp, mbb=None, co
             i2 = (7 if compute_ndvi else 6) if compute_mndwi2 else 2
             png_img = LT_img[[i0,i1,i2]]
             for i,b in enumerate([i0,i1,i2]): #reescalo
-                if b<3: #reescalo entre 0.05 y 0.2 para reflectancia
-                    png_img[i]-=0.80 
-                    png_img[i]/=0.30
+                if b<3: #reescalo entre 0.00 y 0.2 para reflectancia
+                    png_img[i]-=0.00 
+                    png_img[i]/=0.20
                 else: #reescalo entre -0.5 y 0.8 para índices
-                    png_img[i]+=0.2 
-                    png_img[i]/=0.5
+                    png_img[i]+=0.5 
+                    png_img[i]/=1.3
                 png_img[i][png_img[i]>1]=1
                 png_img[i][png_img[i]<0]=0
             py=png_img[0].shape[0]/300+1
